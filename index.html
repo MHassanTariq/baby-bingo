@@ -113,12 +113,19 @@
 
       function handleCellClick(event) {
         const cell = event.target;
-        if (cell.classList.contains("crossed")) return;
 
-        cell.classList.add("crossed");
+        // Toggle the "crossed" class
+        if (cell.classList.contains("crossed")) {
+          // If already selected, deselect it
+          cell.classList.remove("crossed");
+        } else {
+          // If not selected, select it
+          cell.classList.add("crossed");
 
-        if (checkWin()) {
-          winnerMessage.style.display = "block";
+          // Check if a win condition is met
+          if (checkWin()) {
+            winnerMessage.style.display = "block";
+          }
         }
       }
 
