@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mooshi Bingo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-color: #f9f9f9;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      .bingo-board {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+        max-width: 500px;
+      }
+      .bingo-cell {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .bingo-cell.crossed {
+        background-color: #7ed957;
+        color: #fff;
+        text-decoration: line-through;
+      }
+      .winner-message {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        color: #4caf50;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mooshi Bingo</h1>
+    <div class="bingo-board" id="bingoBoard"></div>
+    <div class="winner-message" id="winnerMessage">You won!</div>
+
+    <script>
+      const babyItems = [
+        "Diapers",
+        "Baby Bottle",
+        "Pacifier",
+        "Baby Rattle",
+        "Baby Blanket",
+        "Onesie",
+        "Baby Shoes",
+        "Baby Powder",
+        "Teething Ring",
+        "Baby Wipes",
+        "Baby Bib",
+        "Baby Crib",
+        "Stroller",
+        "High Chair",
+        "Baby Monitor",
+        "Baby Food",
+        "Baby Lotion",
+        "Burp Cloth",
+        "Baby Hat",
+        "Baby Shampoo",
+        "Baby Carrier",
+        "Baby Socks",
+        "Changing Pad",
+        "Baby Toys",
+        "Car Seat",
+      ];
+
+      const bingoBoard = document.getElementById("bingoBoard");
+      const winnerMessage = document.getElementById("winnerMessage");
+
+      // Shuffle the baby items and pick 25
+      const shuffledItems = babyItems
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 25);
+
+      // Create a 5x5 Bingo board
+      const board = [];
+      for (let i = 0; i < 5; i++) {
+        board.push(shuffledItems.slice(i * 5, i * 5 + 5));
+      }
+
+      // Render the Bingo board
+      board.flat().forEach((item, index) => {
+        const cell = document.createElement("div");
+        cell.classList.add("bingo-cell");
+        cell.textContent = item;
+        cell.dataset.row = Math.floor(index / 5);
+        cell.dataset.col = index % 5;
+        cell.addEventListener("click", handleCellClick);
+        bingoBoard.appendChild(cell);
+      });
+
+      function handleCellClick(event) {
+        const cell = event.target;
+        if (cell.classList.contains("crossed")) return;
+
+        cell.classList.add("crossed");
+
+        if (checkWin()) {
+          winnerMessage.style.display = "block";
+        }
+      }
+
+      function checkWin() {
+        const cells = document.querySelectorAll(".bingo-cell");
+        const rows = Array.from({ length: 5 }, () => []);
+        const cols = Array.from({ length: 5 }, () => []);
+        const diagonals = [[], []];
+
+        cells.forEach((cell) => {
+          const row = parseInt(cell.dataset.row, 10);
+          const col = parseInt(cell.dataset.col, 10);
+
+          if (cell.classList.contains("crossed")) {
+            rows[row].push(cell);
+            cols[col].push(cell);
+            if (row === col) diagonals[0].push(cell);
+            if (row + col === 4) diagonals[1].push(cell);
+          }
+        });
+
+        // Check if any row, column, or diagonal is fully crossed
+        return (
+          rows.some((row) => row.length === 5) ||
+          cols.some((col) => col.length === 5) ||
+          diagonals.some((diagonal) => diagonal.length === 5)
+        );
+      }
+    </script>
+  </body>
+</html>
